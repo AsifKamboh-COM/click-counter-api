@@ -1,16 +1,26 @@
 {
   "name": "click-counter-api",
   "version": "1.0.0",
-  "description": "A click counter API with Firebase Realtime Database",
+  "description": "A simple click counter API to track views, downloads, and other custom keys for each POSTID using Firebase.",
   "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
+  "keywords": [
+    "click counter",
+    "API",
+    "node.js",
+    "express",
+    "firebase",
+    "firebase database"
+  ],
+  "author": "Asif Kamboh",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "firebase-admin": "^11.10.1"
+    "firebase": "^10.7.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
