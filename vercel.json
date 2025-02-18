@@ -1,9 +1,16 @@
 {
   "version": 2,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
     }
+  },
+  "routes": [
+    { "src": "/api/get/(.*)", "dest": "/api/get.js" },
+    { "src": "/api/inc/(.*)", "dest": "/api/inc.js" },
+    { "src": "/api/dec/(.*)", "dest": "/api/dec.js" },
+    { "src": "/api/set/(.*)", "dest": "/api/set.js" },
+    { "src": "/api/reset/(.*)", "dest": "/api/reset.js" },
+    { "src": "/api/info/(.*)", "dest": "/api/info.js" }
   ]
 }
