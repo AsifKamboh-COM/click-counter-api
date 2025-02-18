@@ -1,26 +1,16 @@
 {
   "name": "click-counter-api",
-  "version": "1.0.1",
-  "description": "A simple click counter API to track views, downloads, and other custom keys for each POSTID using Redis and Upstash.",
+  "version": "1.0.0",
+  "description": "A click counter API with Firebase Realtime Database",
+  "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "vercel dev",
-    "dev": "nodemon api/get.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "keywords": [
-    "click counter",
-    "API",
-    "node.js",
-    "express",
-    "redis",
-    "upstash",
-    "vercel"
-  ],
-  "author": "Asif Kamboh",
-  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "redis": "^4.6.7"
+    "firebase-admin": "^11.10.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
