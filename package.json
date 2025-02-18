@@ -1,12 +1,11 @@
 {
   "name": "click-counter-api",
-  "version": "1.0.0",
-  "description": "A simple click counter API to track views, downloads, and other custom keys for each POSTID.",
-  "main": "app.js",
+  "version": "1.0.1",
+  "description": "A simple click counter API to track views, downloads, and other custom keys for each POSTID using Redis and Upstash.",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "vercel dev",
+    "dev": "nodemon api/get.js"
   },
   "keywords": [
     "click counter",
@@ -14,7 +13,8 @@
     "node.js",
     "express",
     "redis",
-    "upstash"
+    "upstash",
+    "vercel"
   ],
   "author": "Asif Kamboh",
   "license": "MIT",
