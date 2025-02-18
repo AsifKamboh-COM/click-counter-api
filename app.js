@@ -1,95 +1,51 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
+const Redis = require("ioredis");
 
 const app = express();
 const port = 3000;
 
-const DATA_FILE = path.join(__dirname, "counters.json");
+const redis = new Redis(process.env.UPSTASH_REDIS_URL);
 
-// Ensure the file exists
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({}, null, 2));
-}
-
-// Load counter data from file
-let counters = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-
-// Function to save counters safely
-function saveCounters() {
-    try {
-        fs.writeFileSync(DATA_FILE, JSON.stringify(counters, null, 2));
-    } catch (error) {
-        console.error("Error saving counters:", error);
-    }
-}
-
-// Function to initialize a counter if it does not exist
-function initializeCounter(postId, key) {
-    if (!counters[postId]) {
-        counters[postId] = {};
-    }
-    if (!counters[postId][key]) {
-        counters[postId][key] = 0;
-        saveCounters();
-    }
-}
-
-// Get current count
-app.get("/api/get/:postId/:key", (req, res) => {
+// Get count
+app.get("/api/get/:postId/:key", async (req, res) => {
     const { postId, key } = req.params;
-    initializeCounter(postId, key);
-    res.json({ value: counters[postId][key] });
+    const value = await redis.get(`${postId}:${key}`) || 0;
+    res.json({ value: parseInt(value) });
 });
 
 // Increment count
-app.get("/api/inc/:postId/:key", (req, res) => {
+app.get("/api/inc/:postId/:key", async (req, res) => {
     const { postId, key } = req.params;
-    initializeCounter(postId, key);
-    counters[postId][key]++;
-    saveCounters();
-    res.json({ increment: { value: counters[postId][key] } });
+    const value = await redis.incr(`${postId}:${key}`);
+    res.json({ increment: { value } });
 });
 
 // Decrement count
-app.get("/api/dec/:postId/:key", (req, res) => {
+app.get("/api/dec/:postId/:key", async (req, res) => {
     const { postId, key } = req.params;
-    initializeCounter(postId, key);
-    counters[postId][key]--;
-    saveCounters();
-    res.json({ decrement: { value: counters[postId][key] } });
+    const value = await redis.decr(`${postId}:${key}`);
+    res.json({ decrement: { value } });
 });
 
-// Set specific value for count
-app.get("/api/set/:postId/:key/:value", (req, res) => {
+// Set count
+app.get("/api/set/:postId/:key/:value", async (req, res) => {
     const { postId, key, value } = req.params;
-    initializeCounter(postId, key);
-    counters[postId][key] = parseInt(value);
-    saveCounters();
-    res.json({ set: { value: counters[postId][key] } });
+    await redis.set(`${postId}:${key}`, value);
+    res.json({ set: { value: parseInt(value) } });
 });
 
-// Reset count to 0
-app.get("/api/reset/:postId/:key", (req, res) => {
+// Reset count
+app.get("/api/reset/:postId/:key", async (req, res) => {
     const { postId, key } = req.params;
-    initializeCounter(postId, key);
-    counters[postId][key] = 0;
-    saveCounters();
-    res.json({ reset: { value: counters[postId][key] } });
+    await redis.set(`${postId}:${key}`, 0);
+    res.json({ reset: { value: 0 } });
 });
 
-// Get information about the key
-app.get("/api/info/:postId/:key", (req, res) => {
+// Get info
+app.get("/api/info/:postId/:key", async (req, res) => {
     const { postId, key } = req.params;
-    initializeCounter(postId, key);
-    res.json({ namespace: postId, key: key, value: counters[postId][key] });
+    const value = await redis.get(`${postId}:${key}`) || 0;
+    res.json({ namespace: postId, key: key, value: parseInt(value) });
 });
 
-// Default route
-app.get("/", (req, res) => {
-    res.send("Click Counter API is running!");
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));
