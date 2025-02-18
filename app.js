@@ -1,20 +1,27 @@
 const express = require("express");
 const fs = require("fs");
+const path = require("path");
+
 const app = express();
 const port = 3000;
 
-// File where counter data will be stored
-const DATA_FILE = "./counters.json";
+const DATA_FILE = path.join(__dirname, "counters.json");
 
-// Load counter data from file (or create an empty object if file doesn't exist)
-let counters = {};
-if (fs.existsSync(DATA_FILE)) {
-    counters = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+// Ensure the file exists
+if (!fs.existsSync(DATA_FILE)) {
+    fs.writeFileSync(DATA_FILE, JSON.stringify({}, null, 2));
 }
 
-// Function to save counters to file
+// Load counter data from file
+let counters = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+
+// Function to save counters safely
 function saveCounters() {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(counters, null, 2));
+    try {
+        fs.writeFileSync(DATA_FILE, JSON.stringify(counters, null, 2));
+    } catch (error) {
+        console.error("Error saving counters:", error);
+    }
 }
 
 // Function to initialize a counter if it does not exist
@@ -24,7 +31,7 @@ function initializeCounter(postId, key) {
     }
     if (!counters[postId][key]) {
         counters[postId][key] = 0;
-        saveCounters(); // Save the initial value
+        saveCounters();
     }
 }
 
@@ -71,15 +78,11 @@ app.get("/api/reset/:postId/:key", (req, res) => {
     res.json({ reset: { value: counters[postId][key] } });
 });
 
-// Get information about the key (meta info)
+// Get information about the key
 app.get("/api/info/:postId/:key", (req, res) => {
     const { postId, key } = req.params;
     initializeCounter(postId, key);
-    res.json({
-        namespace: postId,
-        key: key,
-        value: counters[postId][key]
-    });
+    res.json({ namespace: postId, key: key, value: counters[postId][key] });
 });
 
 // Default route
@@ -87,7 +90,6 @@ app.get("/", (req, res) => {
     res.send("Click Counter API is running!");
 });
 
-// Start server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
