@@ -1,9 +1,13 @@
 import express from "express";
+import cors from "cors";  // ✅ Import CORS
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get, set, update } from "firebase/database";
+import { getDatabase, ref, get, set } from "firebase/database";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ✅ Enable CORS for all origins (or specify allowed origins)
+app.use(cors());
 
 // ✅ Firebase Configuration
 const firebaseConfig = {
