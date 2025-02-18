@@ -1,4 +1,3 @@
-// app.js
 const express = require("express");
 const app = express();
 const port = 3000;
@@ -24,8 +23,6 @@ app.get("/api/get/:postId/:key", (req, res) => {
   const { postId, key } = req.params;
   initializeCounter(postId, key);
   res.json({
-    namespace: postId,
-    key: key,
     value: counters[postId][key],
   });
 });
@@ -36,9 +33,7 @@ app.get("/api/inc/:postId/:key", (req, res) => {
   initializeCounter(postId, key);
   counters[postId][key]++;
   res.json({
-    namespace: postId,
-    key: key,
-    value: counters[postId][key],
+    increment: { value: counters[postId][key] },
   });
 });
 
@@ -48,9 +43,7 @@ app.get("/api/dec/:postId/:key", (req, res) => {
   initializeCounter(postId, key);
   counters[postId][key]--;
   res.json({
-    namespace: postId,
-    key: key,
-    value: counters[postId][key],
+    decrement: { value: counters[postId][key] },
   });
 });
 
@@ -60,9 +53,7 @@ app.get("/api/set/:postId/:key/:value", (req, res) => {
   initializeCounter(postId, key);
   counters[postId][key] = parseInt(value);
   res.json({
-    namespace: postId,
-    key: key,
-    value: counters[postId][key],
+    set: { value: counters[postId][key] },
   });
 });
 
@@ -72,9 +63,7 @@ app.get("/api/reset/:postId/:key", (req, res) => {
   initializeCounter(postId, key);
   counters[postId][key] = 0;
   res.json({
-    namespace: postId,
-    key: key,
-    value: counters[postId][key],
+    reset: { value: counters[postId][key] },
   });
 });
 
