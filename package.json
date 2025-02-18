@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "A simple click counter API to track views, downloads, and other custom keys for each POSTID.",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js",
-    "vercel-build": "node app.js"
+    "dev": "nodemon app.js"
   },
   "keywords": [
     "click counter",
