@@ -1,72 +1,103 @@
 import express from "express";
-import admin from "firebase-admin";
-import fs from "fs";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, get, set, update } from "firebase/database";
 
-// Initialize Firebase
-const serviceAccount = JSON.parse(fs.readFileSync("./firebaseAdmin.json", "utf8"));
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://click-counter-api-42216-default-rtdb.firebaseio.com/" // Replace with your Firebase Realtime Database URL
-});
-
-const db = admin.database();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// ✅ Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAMh--HEWIPrvxVbuJ7yl-JpgMCR8KRlUc",
+  authDomain: "click-counter-api-42216.firebaseapp.com",
+  databaseURL: "https://click-counter-api-42216-default-rtdb.firebaseio.com",
+  projectId: "click-counter-api-42216",
+  storageBucket: "click-counter-api-42216.firebasestorage.app",
+  messagingSenderId: "209648397046",
+  appId: "1:209648397046:web:b7110c8f0b9e091e0fdad7"
+};
 
-// Function to get a reference to a specific key
-const getRef = (postID, key) => db.ref(`counters/${postID}/${key}`);
+// ✅ Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getDatabase(firebaseApp);
 
-// ✅ Get current value
+// ✅ Function to get database reference
+const getRef = (postID, key) => ref(db, `counters/${postID}/${key}`);
+
+// ✅ Get value
 app.get("/api/get/:postID/:key", async (req, res) => {
   const { postID, key } = req.params;
-  const snapshot = await getRef(postID, key).once("value");
-  res.json({ value: snapshot.val() || 0 });
+  try {
+    const snapshot = await get(getRef(postID, key));
+    res.json({ value: snapshot.exists() ? snapshot.val() : 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ✅ Increment value
 app.get("/api/inc/:postID/:key", async (req, res) => {
   const { postID, key } = req.params;
-  const ref = getRef(postID, key);
-  ref.transaction(value => (value || 0) + 1);
-  res.json({ message: "incremented" });
+  try {
+    const snapshot = await get(getRef(postID, key));
+    const currentValue = snapshot.exists() ? snapshot.val() : 0;
+    await set(getRef(postID, key), currentValue + 1);
+    res.json({ message: "incremented", value: currentValue + 1 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ✅ Decrement value
 app.get("/api/dec/:postID/:key", async (req, res) => {
   const { postID, key } = req.params;
-  const ref = getRef(postID, key);
-  ref.transaction(value => (value || 0) - 1);
-  res.json({ message: "decremented" });
+  try {
+    const snapshot = await get(getRef(postID, key));
+    const currentValue = snapshot.exists() ? snapshot.val() : 0;
+    await set(getRef(postID, key), currentValue - 1);
+    res.json({ message: "decremented", value: currentValue - 1 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ✅ Set a specific value
 app.get("/api/set/:postID/:key/:value", async (req, res) => {
   const { postID, key, value } = req.params;
-  await getRef(postID, key).set(parseInt(value));
-  res.json({ message: `set to ${value}` });
+  try {
+    await set(getRef(postID, key), parseInt(value));
+    res.json({ message: `set to ${value}`, value: parseInt(value) });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ✅ Reset value to 0
 app.get("/api/reset/:postID/:key", async (req, res) => {
   const { postID, key } = req.params;
-  await getRef(postID, key).set(0);
-  res.json({ message: "reset to 0" });
+  try {
+    await set(getRef(postID, key), 0);
+    res.json({ message: "reset to 0" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ✅ Get info
 app.get("/api/info/:postID/:key", async (req, res) => {
   const { postID, key } = req.params;
-  const snapshot = await getRef(postID, key).once("value");
-  res.json({
-    namespace: postID,
-    key: key,
-    value: snapshot.val() || 0
-  });
+  try {
+    const snapshot = await get(getRef(postID, key));
+    res.json({
+      namespace: postID,
+      key: key,
+      value: snapshot.exists() ? snapshot.val() : 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
+// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
