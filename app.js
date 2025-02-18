@@ -31,7 +31,7 @@ app.get("/api/get/:postId/:key", (req, res) => {
 });
 
 // Increment count
-app.post("/api/inc/:postId/:key", (req, res) => {
+app.get("/api/inc/:postId/:key", (req, res) => {
   const { postId, key } = req.params;
   initializeCounter(postId, key);
   counters[postId][key]++;
@@ -43,7 +43,7 @@ app.post("/api/inc/:postId/:key", (req, res) => {
 });
 
 // Decrement count
-app.post("/api/dec/:postId/:key", (req, res) => {
+app.get("/api/dec/:postId/:key", (req, res) => {
   const { postId, key } = req.params;
   initializeCounter(postId, key);
   counters[postId][key]--;
@@ -55,7 +55,7 @@ app.post("/api/dec/:postId/:key", (req, res) => {
 });
 
 // Set specific value for count
-app.post("/api/set/:postId/:key/:value", (req, res) => {
+app.get("/api/set/:postId/:key/:value", (req, res) => {
   const { postId, key, value } = req.params;
   initializeCounter(postId, key);
   counters[postId][key] = parseInt(value);
@@ -67,7 +67,7 @@ app.post("/api/set/:postId/:key/:value", (req, res) => {
 });
 
 // Reset count to 0
-app.post("/api/reset/:postId/:key", (req, res) => {
+app.get("/api/reset/:postId/:key", (req, res) => {
   const { postId, key } = req.params;
   initializeCounter(postId, key);
   counters[postId][key] = 0;
