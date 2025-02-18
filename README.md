@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/Node.js-%3E%3D%2018.0.0-green.svg)](https://nodejs.org/)
+[![Firebase Database](https://img.shields.io/badge/Firebase-Database-yellowgreen.svg)](https://firebase.google.com/docs/database)
 
 # Click Counter API
 
