@@ -116,7 +116,7 @@ This will start the server on `http://localhost:3000`.
 │   └── index.html       # Static HTML frontend to interact with the API
 ├── app.js               # Main Node.js server file
 ├── package.json         # Project metadata and dependencies
-├── vercel.json           # Vercel deployment configuration
+├── vercel.json          # Vercel deployment configuration
 ├── LICENSE              # License information
 └── README.md            # Documentation file
 ```
